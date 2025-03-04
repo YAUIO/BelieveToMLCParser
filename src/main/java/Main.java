@@ -1,16 +1,15 @@
-import Entities.BlackBeatEntry;
-import Entities.Init;
-import Entities.MLCEntry;
-import Entities.Person;
+import Entities.*;
 import Parsers.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     private static File inputData;
+    private static List<File> inputMLC;
 
     public static void main(String[] args) {
         Init.setDB("Names");
@@ -25,8 +24,25 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        ArrayList<BlackBeatEntry> sourceData = BlackBeatToList.parse(inputData);
-        ArrayList<MLCEntry> outData = BlackBeatToMLC.convert(sourceData);
+        try {
+            selectDataFiles();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayList<BelieveEntity> sourceData = XLSXBelieveToList.parse(inputData);
+
+        ArrayList<MLCEntry> writtenMlc = new ArrayList<>();
+        for (File file : inputMLC) {
+            writtenMlc.addAll(XLSXMLCToList.parse(file));
+        }
+
+        ArrayList<MLCEntry> outData = BelieveToMLC.convert(sourceData);
+
+        System.out.println("Total MLC: " + outData.size());
+        outData = RemoveNonUnique.call(outData, writtenMlc);
+        System.out.println("Unsubmitted MLC: " + outData.size());
+
         String path = "new.xlsx";
         MLCListToXLSX.record(new File(path), outData);
 
@@ -52,6 +68,45 @@ public class Main {
             jfc.addActionListener(e -> {
                 if (e.getActionCommand().equals("ApproveSelection")) {
                     inputData = jfc.getSelectedFile();
+                    synchronized (current) {
+                        current.interrupt();
+                    }
+                    dial.dispose();
+                } else if (e.getActionCommand().equals("CancelSelection")) {
+                    System.exit(1);
+                }
+            });
+
+            synchronized (current) {
+                try {
+                    current.wait();
+                } catch (InterruptedException _) {}
+            }
+        };
+
+        Thread t = new Thread(task);
+        t.start();
+        t.join();
+    }
+
+    private static void selectDataFiles() throws InterruptedException {
+        Runnable task = () -> {
+            File dir = new File("");
+            JFileChooser jfc = new JFileChooser(dir.getAbsolutePath());
+            jfc.setMultiSelectionEnabled(true);
+            JDialog dial = new JDialog();
+            dial.setTitle("Choose input MLC files");
+            jfc.setDialogTitle("Choose input MLC files");
+            Person.addListeners(dial);
+            dial.setContentPane(jfc);
+            dial.pack();
+            dial.setVisible(true);
+
+            Thread current = Thread.currentThread();
+
+            jfc.addActionListener(e -> {
+                if (e.getActionCommand().equals("ApproveSelection")) {
+                    inputMLC = List.of(jfc.getSelectedFiles());
                     synchronized (current) {
                         current.interrupt();
                     }

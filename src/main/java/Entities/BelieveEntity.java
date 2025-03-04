@@ -27,7 +27,7 @@ public class BelieveEntity {
     public String Product_type;
 
     @AlternateTitle("Production year")
-    public int Production_year;
+    public Integer Production_year;
 
     @AlternateTitle("Track artist name")
     public String Track_artist_name;
@@ -67,7 +67,7 @@ public class BelieveEntity {
     public String Track_Producer;
 
     @AlternateTitle("Track productionYear")
-    public int Track_productionYear;
+    public Integer Track_productionYear;
 
     @AlternateTitle("Track remixer")
     public String Track_remixer;
@@ -76,12 +76,48 @@ public class BelieveEntity {
     public String Track_title;
 
     @AlternateTitle("Track support number")
-    public int Track_support_number;
+    public Integer Track_support_number;
 
     @AlternateTitle("Track track number")
-    public int Track_track_number;
+    public Integer Track_track_number;
 
     @AlternateTitle("Track version")
-    public int Track_version;
+    public Integer Track_version;
     public String UPC;
+
+    @Override
+    public String toString() {
+        return "BelieveEntity{" +
+                "Release_status='" + Release_status + '\'' +
+                ", Title='" + Title + '\'' +
+                ", Version='" + Version + '\'' +
+                ", Release_type='" + Release_type + '\'' +
+                ", Artist='" + Artist + '\'' +
+                ", Digital_release_date=" + Digital_release_date +
+                ", Explicit_content='" + Explicit_content + '\'' +
+                ", Product_language='" + Product_language + '\'' +
+                ", Product_type='" + Product_type + '\'' +
+                ", Production_year=" + Production_year +
+                ", Track_artist_name='" + Track_artist_name + '\'' +
+                ", Track_author='" + Track_author + '\'' +
+                ", Track_C_Line='" + Track_C_Line + '\'' +
+                ", Track_composer='" + Track_composer + '\'' +
+                ", Track_Featuring='" + Track_Featuring + '\'' +
+                ", Track_primary_genre='" + Track_primary_genre + '\'' +
+                ", ISRC='" + ISRC + '\'' +
+                ", Track_label='" + Track_label + '\'' +
+                ", Track_lyrics_language='" + Track_lyrics_language + '\'' +
+                ", Track_metadata_language='" + Track_metadata_language + '\'' +
+                ", Track_P_Line='" + Track_P_Line + '\'' +
+                ", Track_preview_start_index='" + Track_preview_start_index + '\'' +
+                ", Track_Producer='" + Track_Producer + '\'' +
+                ", Track_productionYear=" + Track_productionYear +
+                ", Track_remixer='" + Track_remixer + '\'' +
+                ", Track_title='" + Track_title + '\'' +
+                ", Track_support_number=" + Track_support_number +
+                ", Track_track_number=" + Track_track_number +
+                ", Track_version=" + Track_version +
+                ", UPC='" + UPC + '\'' +
+                '}';
+    }
 }

@@ -43,7 +43,7 @@ public class MLCEntry {
     String RECORDING_ARTIST_NAME;
 
     @AlternateTitle("RECORDING ISRC")
-    String RECORDING_ISRC;
+    public String RECORDING_ISRC;
 
     @AlternateTitle("RECORDING LABEL")
     String RECORDING_LABEL;

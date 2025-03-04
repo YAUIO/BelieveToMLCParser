@@ -34,6 +34,9 @@ public class BlackBeatToList {
 
         for (int i = 3; i <= sourceSheet.getLastRowNum(); i++) {
             Row row = sourceSheet.getRow(i);
+            if (row == null) {
+                continue;
+            }
             if (row.getCell(0).getDateCellValue() == null) {
                 break;
             }

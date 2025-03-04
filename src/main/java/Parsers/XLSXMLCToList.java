@@ -1,7 +1,8 @@
 package Parsers;
 
 import Entities.BelieveEntity;
-import Entities.BlackBeatEntry;
+import Entities.MLCEntry;
+import Entities.Person;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -11,11 +12,12 @@ import java.lang.reflect.Field;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
-public class XLSXBelieveToList {
-    public static ArrayList<BelieveEntity> parse(File source) {
-        System.out.println("Started parsing Believe table");
+public class XLSXMLCToList {
+    public static Collection<? extends MLCEntry> parse(File source) {
+        System.out.println("Started parsing MLC table");
         FileInputStream file = null;
         Workbook sourceBook = null;
         try {
@@ -28,20 +30,20 @@ public class XLSXBelieveToList {
         Sheet sourceSheet = sourceBook.getSheetAt(0);
         Row header = sourceSheet.getRow(0);
 
-        Class<?> entryClass = BelieveEntity.class;
+        Class<?> entryClass = MLCEntry.class;
         Field[] fields = entryClass.getDeclaredFields();
 
-        ArrayList<BelieveEntity> data = new ArrayList<>();
+        ArrayList<MLCEntry> data = new ArrayList<>();
 
         for (int i = 1; i <= sourceSheet.getLastRowNum(); i++) {
             Row row = sourceSheet.getRow(i);
             if (row == null) {
                 continue;
             }
-            if (row.getCell(0).getStringCellValue() == null) {
+            if (row.getCell(0) == null || (row.getCell(0).getCellType() == CellType.STRING && row.getCell(0).getStringCellValue() == null)) {
                 break;
             }
-            BelieveEntity entity = new BelieveEntity();
+            MLCEntry entity = new MLCEntry();
             for (int cell = 0; cell < fields.length; cell++) {
                 Cell val = row.getCell(cell);
 
@@ -106,11 +108,15 @@ public class XLSXBelieveToList {
                     System.out.println(e.getMessage());
                 }
             }
+            if (entity.RECORDING_ISRC == null || entity.RECORDING_ISRC.isEmpty() || entity.RECORDING_ISRC.isBlank()) {
+                continue;
+            }
+            Person.write(entity);
             data.add(entity);
             //System.out.println("Parsed row " + (i + 1) + "/" + (sourceSheet.getLastRowNum() + 1) + " | " + entity);
         }
 
-        System.out.println("Finished parsing Believe table\n");
+        System.out.println("Finished parsing MLC table\n");
 
         return data;
     }
