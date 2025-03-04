@@ -20,7 +20,7 @@ public class Person {
     @AlternateTitle("WRITER ROLE CODE *")
     public String code;
 
-    private enum role_codes {C, A, CA}
+    private enum role_codes {C, A, CA, ERROR}
 
     public static void write (MLCEntry entry) {
         String firstName = entry.WRITER_FIRST_NAME;

@@ -32,24 +32,34 @@ public class BelieveToMLC {
 
             debugCounter++;
 
+            String[] splitS = null;
+
             list = new PersonList();
+            if (bb.Track_author != null) {
+                splitS = bb.Track_author.split(",");
+                if (bb.Track_author.split("/").length > splitS.length) {
+                    splitS = bb.Track_author.split("/");
+                }
 
-            String[] splitS = bb.Track_author.split(",");
-            if (bb.Track_author.split("/").length > splitS.length) {
-                splitS = bb.Track_author.split("/");
+                for (String s : splitS) {
+                    list.add(new Person(s, "A"));
+                }
             }
 
-            for (String s : splitS) {
-                list.add(new Person(s, "A"));
+            if (bb.Track_composer != null) {
+                splitS = bb.Track_composer.split(",");
+                if (bb.Track_composer.split("/").length > splitS.length) {
+                    splitS = bb.Track_composer.split("/");
+                }
+
+                for (String s : splitS) {
+                    list.add(new Person(s, "C"));
+                }
             }
 
-            splitS = bb.Track_composer.split(",");
-            if (bb.Track_composer.split("/").length > splitS.length) {
-                splitS = bb.Track_composer.split("/");
-            }
-
-            for (String s : splitS) {
-                list.add(new Person(s, "C"));
+            if (list.size() == 0) {
+                list.add(new Person("WRONGDATA","E"));
+                System.err.println("Track has no author and no composer, writing as WRONGDATA with code ERROR");
             }
 
             for (int i = 0; i < list.size(); i++) {
