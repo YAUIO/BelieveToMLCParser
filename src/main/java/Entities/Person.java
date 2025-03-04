@@ -376,7 +376,7 @@ public class Person {
                                     }
                                 }
 
-                                if (!FirstName.equals("WRONGDATA")) {
+                                if (!LastName.equals("WRONGDATA")) {
                                     JDialog jd = new JDialog();
                                     addListeners(jd);
                                     jd.setTitle("Need manual intervention");
@@ -715,6 +715,7 @@ public class Person {
     }
 
     public static void addListeners(JDialog jd) {
+        //jd.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width)/2 - jd.getWidth()/2, (Toolkit.getDefaultToolkit().getScreenSize().height)/2 - jd.getHeight()/2);
         jd.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
