@@ -77,6 +77,9 @@ public class Person {
                     } else if (Init.getEntityManager().createQuery("SELECT b from Human b WHERE b.name=:name").setParameter("name", nameArr[1]).getSingleResultOrNull() != null) {
                         FirstName = nameArr[1];
                         LastName = nameArr[0];
+                    } else if (Init.getEntityManager().createQuery("SELECT b from Human b WHERE b.name=:name").setParameter("name", name).getSingleResultOrNull() != null) {
+                        FirstName = name;
+                        LastName = "WRONGDATA";
                     } else {
                         JDialog jd = new JDialog();
                         addListeners(jd);
@@ -179,8 +182,21 @@ public class Person {
 
                         String finalName1 = name;
                         ignore.addActionListener(l -> {
-                            FirstName = "WRONGDATA";
-                            LastName = finalName1;
+                            FirstName = finalName1;
+                            LastName = "WRONGDATA";
+                            Human h = new Human();
+                            h.name = finalName1;
+                            h.fisur.put(finalName1, "WRONGDATA");
+                            if (Init.getEntityManager().createQuery("SELECT h from Human h JOIN h.fisur f where key(f) = :fis").setParameter("fis", finalName1).getSingleResultOrNull() == null) {
+                                try {
+                                    EntityManager em = Init.getEntityManager();
+                                    em.getTransaction().begin();
+                                    em.persist(h);
+                                    em.getTransaction().commit();
+                                } catch (Exception e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
                             jd.setVisible(false);
                             jd.dispose();
                             synchronized (wait) {
@@ -226,7 +242,11 @@ public class Person {
                     if (FirstName == null && LastName == null) {
 
                         if (nameArr.length == 3) {
-                            if (nameArr[1].length() == 2 && nameArr[2].length() == 2) {
+
+                            if (Init.getEntityManager().createQuery("SELECT b from Human b WHERE b.name=:name").setParameter("name", name).getSingleResultOrNull() != null) {
+                                FirstName = name;
+                                LastName = "WRONGDATA";
+                            } else if (nameArr[1].length() == 2 && nameArr[2].length() == 2) {
                                 if (nameArr[1].endsWith(".") && nameArr[2].endsWith(".")) {
                                     if (!nameArr[0].endsWith(".")) {
                                         FirstName = nameArr[1];
@@ -326,8 +346,21 @@ public class Person {
 
                                     String finalName1 = name;
                                     ignore.addActionListener(l -> {
-                                        FirstName = "WRONGDATA";
-                                        LastName = finalName1;
+                                        FirstName = finalName1;
+                                        LastName = "WRONGDATA";
+                                        Human h = new Human();
+                                        h.name = finalName1;
+                                        h.fisur.put(finalName1, "WRONGDATA");
+                                        if (Init.getEntityManager().createQuery("SELECT h from Human h JOIN h.fisur f where key(f) = :fis").setParameter("fis", finalName1).getSingleResultOrNull() == null) {
+                                            try {
+                                                EntityManager em = Init.getEntityManager();
+                                                em.getTransaction().begin();
+                                                em.persist(h);
+                                                em.getTransaction().commit();
+                                            } catch (Exception e) {
+                                                System.out.println(e.getMessage());
+                                            }
+                                        }
                                         jd.setVisible(false);
                                         jd.dispose();
                                         synchronized (wait) {
@@ -604,8 +637,21 @@ public class Person {
 
                             String finalName1 = name;
                             ignore.addActionListener(l -> {
-                                FirstName = "WRONGDATA";
-                                LastName = finalName1;
+                                FirstName = finalName1;
+                                LastName = "WRONGDATA";
+                                Human h = new Human();
+                                h.name = finalName1;
+                                h.fisur.put(finalName1, "WRONGDATA");
+                                if (Init.getEntityManager().createQuery("SELECT h from Human h JOIN h.fisur f where key(f) = :fis").setParameter("fis", finalName1).getSingleResultOrNull() == null) {
+                                    try {
+                                        EntityManager em = Init.getEntityManager();
+                                        em.getTransaction().begin();
+                                        em.persist(h);
+                                        em.getTransaction().commit();
+                                    } catch (Exception e) {
+                                        System.out.println(e.getMessage());
+                                    }
+                                }
                                 jd.setVisible(false);
                                 jd.dispose();
                                 synchronized (wait) {
