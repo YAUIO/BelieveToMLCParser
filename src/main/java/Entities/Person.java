@@ -376,7 +376,7 @@ public class Person {
                                     }
                                 }
 
-                                if (!LastName.equals("WRONGDATA")) {
+                                if (LastName != null && !LastName.equals("WRONGDATA")) {
                                     JDialog jd = new JDialog();
                                     addListeners(jd);
                                     jd.setTitle("Need manual intervention");
