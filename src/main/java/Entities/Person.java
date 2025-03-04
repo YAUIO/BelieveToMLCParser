@@ -1,6 +1,7 @@
 package Entities;
 
 import Annotations.AlternateTitle;
+import Parsers.BelieveDBtoFile;
 import Parsers.DBtoXLSX;
 import jakarta.persistence.EntityManager;
 
@@ -244,6 +245,9 @@ public class Person {
                         if (nameArr.length == 3) {
 
                             if (Init.getEntityManager().createQuery("SELECT b from Human b WHERE b.name=:name").setParameter("name", name).getSingleResultOrNull() != null) {
+                                FirstName = name;
+                                LastName = "WRONGDATA";
+                            } else if (name.toLowerCase().contains("уулу") || name.toLowerCase().contains("uulu") ||name.toLowerCase().contains("кызы") || name.toLowerCase().contains("kyzy")) {
                                 FirstName = name;
                                 LastName = "WRONGDATA";
                             } else if (nameArr[1].length() == 2 && nameArr[2].length() == 2) {
@@ -723,7 +727,10 @@ public class Person {
                     System.err.println("JDialog closed, saving db and exiting...");
                     File f = new File("db.xlsx");
                     if (f.exists()) if (!f.delete()) System.err.println("Couldn't delete db.xlsx");
+                    File believeDB = new File("believeDB.xlsx");
+                    if (believeDB.exists()) if (!believeDB.delete()) System.err.println("Couldn't delete believeDB.xlsx");
                     DBtoXLSX.write(f);
+                    BelieveDBtoFile.write(believeDB);
                     System.exit(1);
                 }
             }

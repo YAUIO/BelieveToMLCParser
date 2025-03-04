@@ -1,14 +1,15 @@
 package Parsers;
 
+import Entities.BelieveDBEntry;
 import Entities.BelieveEntity;
+import Entities.Init;
 import Entities.Person;
+import jakarta.persistence.EntityManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class FixSameTNameAuthorDifferentArtist {
     public static ArrayList<BelieveEntity> fix(ArrayList<BelieveEntity> source) {
@@ -17,8 +18,16 @@ public class FixSameTNameAuthorDifferentArtist {
 
         for (BelieveEntity ent : source) {
             String s = generateKey(ent);
-            map.computeIfAbsent(s, k -> new ArrayList<>());
-            map.get(s).add(ent);
+            BelieveDBEntry dbe = Init.getEntityManager().createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key", BelieveDBEntry.class).setParameter("key", s).getSingleResultOrNull();
+            if (dbe == null) {
+                map.computeIfAbsent(s, k -> new ArrayList<>());
+                map.get(s).add(ent);
+            } else {
+                ent.Track_author = dbe.author;
+                ent.Track_composer = dbe.composer;
+                ent.Track_Featuring = null;
+                ret.add(ent);
+            }
         }
 
         for (ArrayList<BelieveEntity> list : map.values()) {
@@ -39,7 +48,30 @@ public class FixSameTNameAuthorDifferentArtist {
             }
         }
 
+        writeToDB(ret);
+
         return ret;
+    }
+
+    private static void writeToDB(ArrayList<BelieveEntity> ret) {
+        HashMap<String, BelieveEntity> parseMap = new HashMap<>();
+
+        for (BelieveEntity e : ret) {
+            parseMap.put(generateKey(e), e);
+        }
+
+        for (BelieveEntity e : parseMap.values()) {
+            EntityManager em = Init.getEntityManager();
+            if (em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key").setParameter("key", generateKey(e)).getSingleResultOrNull() == null) {
+                em.getTransaction().begin();
+                BelieveDBEntry entry = new BelieveDBEntry();
+                entry.keys = generateKey(e);
+                entry.author = e.Track_author;
+                entry.composer = e.Track_composer;
+                em.persist(entry);
+                em.getTransaction().commit();
+            }
+        }
     }
 
     private static void raiseQuestion(ArrayList<BelieveEntity> list, ArrayList<BelieveEntity> ret) {
@@ -89,6 +121,7 @@ public class FixSameTNameAuthorDifferentArtist {
                     ent.Track_Featuring = one.Track_Featuring;
                     ret.add(ent);
                 }
+                writeToDB(ret);
                 synchronized (current) {
                     current.interrupt();
                 }
@@ -116,6 +149,7 @@ public class FixSameTNameAuthorDifferentArtist {
                     ent.Track_Featuring = one.Track_Featuring;
                     ret.add(ent);
                 }
+                writeToDB(ret);
                 synchronized (current) {
                     current.interrupt();
                 }
