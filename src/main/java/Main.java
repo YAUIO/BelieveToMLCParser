@@ -15,8 +15,13 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         Init.setDB("Names");
         File f = new File("db.xlsx");
+        File believeDB = new File("believeDB.xlsx");
         if (f.exists()) {
             XLSXtoDB.load(f);
+        }
+
+        if (believeDB.exists()) {
+            XLSXtoBelieveDB.load(believeDB);
         }
 
         if (new File("paths.csv").exists() && selectPath()) {
@@ -47,6 +52,8 @@ public class Main {
             writtenMlc.addAll(XLSXMLCToList.parse(file));
         }
 
+        sourceData = FixSameTNameAuthorDifferentArtist.fix(sourceData);
+
         ArrayList<MLCEntry> outData = BelieveToMLC.convert(sourceData);
 
         System.out.println("Total MLC: " + outData.size());
@@ -56,8 +63,11 @@ public class Main {
         String path = "new.xlsx";
         MLCListToXLSX.record(new File(path), outData);
 
-        if (f.exists()) if (!f.delete()) System.err.println("Couldn't delete db.xlsx");
 
+        if (believeDB.exists()) if (!believeDB.delete()) System.err.println("Couldn't delete believeDB.xlsx");
+        DBtoXLSX.write(believeDB);
+
+        if (f.exists()) if (!f.delete()) System.err.println("Couldn't delete db.xlsx");
         DBtoXLSX.write(f);
     }
 
