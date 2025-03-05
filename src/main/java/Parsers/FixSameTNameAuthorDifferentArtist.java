@@ -78,13 +78,16 @@ public class FixSameTNameAuthorDifferentArtist {
         JDialog dial = new JDialog();
         Person.addListeners(dial);
         dial.setLayout(new BorderLayout());
-        dial.setSize(new Dimension(1080, 800));
-        dial.setPreferredSize(new Dimension(1080, 800));
+        dial.setSize(new Dimension(1080, 840));
+        dial.setPreferredSize(new Dimension(1080, 840));
         JLabel jl = new JLabel("Choose which info to preserve for: " + generateKey(list.getFirst()) + " (Artist:Title:Version)");
-        JPanel line = new JPanel(new GridLayout(1, 3));
-        JTextArea ja = new JTextArea("Type Custom Author Here");
-        JTextArea jc = new JTextArea("Type Custom Composer Here");
+        JPanel line = new JPanel(new GridLayout(2, 3));
+        JTextArea ja = new JTextArea("");
+        JTextArea jc = new JTextArea("");
         JButton submit = new JButton("SUBMIT");
+        line.add(new JLabel("Type Custom Artist(s) below"));
+        line.add(new JLabel("Type Custom Composer(s) below"));
+        line.add(new JLabel(""));
         line.add(ja);
         line.add(jc);
         line.add(submit);
@@ -134,10 +137,10 @@ public class FixSameTNameAuthorDifferentArtist {
         }
 
         submit.addActionListener(e -> {
-            if (!jc.getText().equals("Type Custom Composer Here")
-                    && !ja.getText().equals("Type Custom Author Here")
-                    && !jc.getText().isBlank() && !jc.getText().isEmpty()
-                    && !ja.getText().isBlank() && !ja.getText().isEmpty()) {
+            if (
+                    !jc.getText().isBlank() && !jc.getText().isEmpty()
+                    && !ja.getText().isBlank() && !ja.getText().isEmpty()
+            ) {
                 System.out.println("Set author to: \"" + ja.getText() + "\", composer to: \"" + jc.getText() + "\"");
                 BelieveEntity one = list.getFirst();
                 one.Track_composer = jc.getText();
@@ -171,21 +174,21 @@ public class FixSameTNameAuthorDifferentArtist {
     }
 
     private static String generateKey(BelieveEntity ent) {
-        return ent.Artist + ":" + ent.Title + ":" + ent.Version;
+        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version;
     }
 
     private static String generateCheckKey(BelieveEntity ent) {
         if (ent.Track_author != null) {
-            return ent.Artist + ":" + ent.Title + ":" + ent.Version + ":" + ent.Track_composer.trim() + ":" + ent.Track_author.trim();
+            return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Track_composer.trim() + ":" + ent.Track_author.trim();
         }
-        return ent.Artist + ":" + ent.Title + ":" + ent.Version + ":" + ent.Track_composer.trim();
+        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Track_composer.trim();
     }
 
     private static String formatEnt(BelieveEntity ent) {
         return "Short info: \n" +
-                "Artist: " + ent.Artist + "\n" +
-                "Title: " + ent.Title + "\n" +
-                "Version: " + ent.Version + "\n" +
+                "Artist: " + ent.Track_artist_name + "\n" +
+                "Title: " + ent.Track_title + "\n" +
+                "Version: " + ent.Track_version + "\n" +
                 "Author: " + ent.Track_author + "\n" +
                 "Composer: " + ent.Track_composer + "\n\n" +
                 "Full info: \n" + ent.toString().replaceAll(",", "\n");

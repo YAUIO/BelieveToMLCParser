@@ -11,7 +11,7 @@ public class BelieveDBEntry {
     @Column(nullable = false, unique = true)
     public String keys;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     public String author;
 
     @Column(nullable = false)
