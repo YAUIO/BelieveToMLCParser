@@ -87,7 +87,8 @@ public class FixSameTNameAuthorDifferentArtist {
         JButton submit = new JButton("SUBMIT");
         line.add(new JLabel("Type Custom Artist(s) below"));
         line.add(new JLabel("Type Custom Composer(s) below"));
-        line.add(new JLabel(""));
+        Button skip = new Button("Skip w/o saving");
+        line.add(skip);
         line.add(ja);
         line.add(jc);
         line.add(submit);
@@ -135,6 +136,14 @@ public class FixSameTNameAuthorDifferentArtist {
             but.setPreferredSize(d);
             but.setMinimumSize(d);
         }
+
+        skip.addActionListener(e -> {
+            System.out.println("Attention: this entry won't be shown in the final .xlsx file! Skipping...");
+            synchronized (current) {
+                current.interrupt();
+            }
+            dial.dispose();
+        });
 
         submit.addActionListener(e -> {
             if (
