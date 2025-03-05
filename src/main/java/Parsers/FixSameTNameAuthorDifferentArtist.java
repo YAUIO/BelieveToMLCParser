@@ -195,11 +195,11 @@ public class FixSameTNameAuthorDifferentArtist {
 
     private static String formatEnt(BelieveEntity ent) {
         return "Short info: \n" +
-                "Artist: " + ent.Track_artist_name + "\n" +
-                "Title: " + ent.Track_title + "\n" +
-                "Version: " + ent.Track_version + "\n" +
-                "Author: " + ent.Track_author + "\n" +
-                "Composer: " + ent.Track_composer + "\n\n" +
+                "Track artist: " + ent.Track_artist_name + "\n" +
+                "Track title: " + ent.Track_title + "\n" +
+                "Track version: " + ent.Track_version + "\n" +
+                "Track author: " + ent.Track_author + "\n" +
+                "Track composer: " + ent.Track_composer + "\n\n" +
                 "Full info: \n" + ent.toString().replaceAll(",", "\n");
     }
 }
