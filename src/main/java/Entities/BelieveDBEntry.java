@@ -17,7 +17,7 @@ public class BelieveDBEntry {
     @ElementCollection
     @CollectionTable(joinColumns = @JoinColumn(name = "BelieveDBEntry_id"))
     @MapKeyColumn()
-    @Column(nullable = true, unique = false)
+    @Column(nullable = true, unique = false, length = 512)
     public Set<String> composer_artist = new HashSet<>();
 
     @Override
