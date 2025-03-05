@@ -94,6 +94,7 @@ public class BelieveToMLC {
                             case "WRITER_LAST_NAME" -> list.get(i).LastName;
                             case "WRITER_FIRST_NAME" -> list.get(i).FirstName;
                             case "WRITER_ROLE_CODE" -> list.get(i).code;
+                            case "RECORDING_ISRC" -> bb.ISRC;
                             default -> null;
                         };
 
