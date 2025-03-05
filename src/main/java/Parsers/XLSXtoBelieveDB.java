@@ -11,6 +11,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class XLSXtoBelieveDB {
     public static void load(File f) {
@@ -23,8 +26,7 @@ public class XLSXtoBelieveDB {
                 BelieveDBEntry h = new BelieveDBEntry();
                 if (row.getCell(1).getStringCellValue() == null) break;
                 h.keys = row.getCell(1).getStringCellValue();
-                h.author = row.getCell(2).getStringCellValue();
-                h.composer = row.getCell(3).getStringCellValue();
+                h.composer_artist = parseCACell(row.getCell(2).getStringCellValue());
                 EntityManager em = Init.getEntityManager();
                 em.getTransaction().begin();
                 if (em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key").setParameter("key",h.keys).getSingleResultOrNull() != null) {
@@ -40,5 +42,9 @@ public class XLSXtoBelieveDB {
         } catch (IOException e) {
             System.out.println("Error reading Excel file: " + e.getMessage());
         }
+    }
+
+    private static Set<String> parseCACell (String s) {
+        return new HashSet<>(List.of(s.split("\\|")));
     }
 }

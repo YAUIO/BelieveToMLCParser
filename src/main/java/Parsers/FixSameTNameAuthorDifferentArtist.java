@@ -60,25 +60,33 @@ public class FixSameTNameAuthorDifferentArtist {
         HashMap<String, BelieveEntity> parseMap = new HashMap<>();
 
         for (BelieveEntity e : ret) {
+            if (parseMap.containsKey(generateKey(e))) {
+                writeEnt(e);
+                continue;
+            }
             parseMap.put(generateKey(e), e);
         }
 
         for (BelieveEntity e : parseMap.values()) {
-            EntityManager em = Init.getEntityManager();
-            if (em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key").setParameter("key", generateKey(e)).getSingleResultOrNull() == null) {
-                em.getTransaction().begin();
-                BelieveDBEntry entry = new BelieveDBEntry();
-                entry.keys = generateKey(e);
-                entry.composer_artist.add(generatePair(e));
-                em.persist(entry);
-                em.getTransaction().commit();
-            } else {
-                BelieveDBEntry ent = em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key", BelieveDBEntry.class).setParameter("key", generateKey(e)).getSingleResult();
-                em.getTransaction().begin();
-                ent.composer_artist.add(generatePair(e));
-                em.persist(ent);
-                em.getTransaction().commit();
-            }
+            writeEnt(e);
+        }
+    }
+
+    private static void writeEnt (BelieveEntity e) {
+        EntityManager em = Init.getEntityManager();
+        if (em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key").setParameter("key", generateKey(e)).getSingleResultOrNull() == null) {
+            em.getTransaction().begin();
+            BelieveDBEntry entry = new BelieveDBEntry();
+            entry.keys = generateKey(e);
+            entry.composer_artist.add(generatePair(e));
+            em.persist(entry);
+            em.getTransaction().commit();
+        } else {
+            BelieveDBEntry ent = em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key", BelieveDBEntry.class).setParameter("key", generateKey(e)).getSingleResult();
+            em.getTransaction().begin();
+            ent.composer_artist.add(generatePair(e));
+            em.persist(ent);
+            em.getTransaction().commit();
         }
     }
 
@@ -147,6 +155,9 @@ public class FixSameTNameAuthorDifferentArtist {
 
         skip.addActionListener(e -> {
             JDialog jd = new JDialog();
+            PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+            Point point = pointerInfo.getLocation();
+            jd.setLocation(point);
             jd.setLayout(new GridLayout(2,1));
             JButton wosave = new JButton("DON'T SAVE TO DB");
             JButton wsave = new JButton("SAVE TO DB");

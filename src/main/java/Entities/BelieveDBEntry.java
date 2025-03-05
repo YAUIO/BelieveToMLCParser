@@ -3,6 +3,7 @@ package Entities;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class BelieveDBEntry {
@@ -17,7 +18,7 @@ public class BelieveDBEntry {
     @CollectionTable(joinColumns = @JoinColumn(name = "BelieveDBEntry_id"))
     @MapKeyColumn()
     @Column(nullable = true, unique = false)
-    public HashSet<String> composer_artist = new HashSet<>();
+    public Set<String> composer_artist = new HashSet<>();
 
     @Override
     public String toString() {

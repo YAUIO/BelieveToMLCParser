@@ -9,9 +9,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 public class BelieveDBtoFile {
-    public static void write (File f) {
+    public static void write(File f) {
         try (Workbook workbook = new XSSFWorkbook(); FileOutputStream fileOut = new FileOutputStream(f)) {
 
             Sheet sheet = workbook.createSheet("DB");
@@ -28,12 +29,26 @@ public class BelieveDBtoFile {
                 for (int c = 0; c < fields.length; c++) {
                     Cell cell = row.createCell(c);
                     fields[c].setAccessible(true);
-                    try {
-                        cell.setCellValue((String) fields[c].get(h));
-                    } catch (Exception _) {
+                    if (fields[c].getType() != Set.class) {
                         try {
-                            cell.setCellValue(String.valueOf(fields[c].get(h)));
-                        } catch (Exception _) {}
+                            cell.setCellValue((String) fields[c].get(h));
+                        } catch (Exception _) {
+                            try {
+                                cell.setCellValue(String.valueOf(fields[c].get(h)));
+                            } catch (Exception _) {
+                            }
+                        }
+                    } else {
+                        try {
+                            Set<String> set = (Set<String>) fields[c].get(h);
+                            StringBuilder format = new StringBuilder();
+                            for (String s : set) {
+                                format.append(s);
+                                format.append("|");
+                            }
+                            cell.setCellValue(format.substring(0, format.length()-1));
+                        } catch (Exception _) {
+                        }
                     }
                 }
                 r++;
