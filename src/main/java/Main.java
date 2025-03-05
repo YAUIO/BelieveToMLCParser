@@ -56,16 +56,17 @@ public class Main {
 
         ArrayList<MLCEntry> outData = BelieveToMLC.convert(sourceData);
 
-        System.out.println("Total MLC: " + outData.size());
+        int size = outData.size();
         outData = RemoveNonUnique.call(outData, writtenMlc);
-        System.out.println("Unsubmitted MLC: " + outData.size());
+        System.out.println("Total MLC: " + size);
+        System.out.println("Filtered (Unsubmitted) MLC: " + outData.size());
 
         String path = "new.xlsx";
         MLCListToXLSX.record(new File(path), outData);
 
 
         if (believeDB.exists()) if (!believeDB.delete()) System.err.println("Couldn't delete believeDB.xlsx");
-        DBtoXLSX.write(believeDB);
+        BelieveDBtoFile.write(believeDB);
 
         if (f.exists()) if (!f.delete()) System.err.println("Couldn't delete db.xlsx");
         DBtoXLSX.write(f);
