@@ -19,12 +19,15 @@ public class FixSameTNameAuthorDifferentArtist {
         for (BelieveEntity ent : source) {
             String s = generateKey(ent);
             BelieveDBEntry dbe = Init.getEntityManager().createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key", BelieveDBEntry.class).setParameter("key", s).getSingleResultOrNull();
-            if (dbe == null) {
+            if (dbe == null || dbe.composer_artist.isEmpty() || !dbe.composer_artist.contains(generatePair(ent))) {
                 map.computeIfAbsent(s, k -> new ArrayList<>());
                 map.get(s).add(ent);
             } else {
-                ent.Track_author = dbe.author;
-                ent.Track_composer = dbe.composer;
+                if (dbe.composer_artist.size() == 1) {
+                    String pair = dbe.composer_artist.iterator().next();
+                    ent.Track_composer = pair.substring(0, pair.indexOf(":"));
+                    ent.Track_author = pair.substring(pair.indexOf(":") + 1);
+                }
                 ent.Track_Featuring = null;
                 ret.add(ent);
             }
@@ -66,9 +69,14 @@ public class FixSameTNameAuthorDifferentArtist {
                 em.getTransaction().begin();
                 BelieveDBEntry entry = new BelieveDBEntry();
                 entry.keys = generateKey(e);
-                entry.author = e.Track_author;
-                entry.composer = e.Track_composer;
+                entry.composer_artist.add(generatePair(e));
                 em.persist(entry);
+                em.getTransaction().commit();
+            } else {
+                BelieveDBEntry ent = em.createQuery("SELECT e from BelieveDBEntry e WHERE e.keys=:key", BelieveDBEntry.class).setParameter("key", generateKey(e)).getSingleResult();
+                em.getTransaction().begin();
+                ent.composer_artist.add(generatePair(e));
+                em.persist(ent);
                 em.getTransaction().commit();
             }
         }
@@ -87,7 +95,7 @@ public class FixSameTNameAuthorDifferentArtist {
         JButton submit = new JButton("SUBMIT");
         line.add(new JLabel("Type Custom Artist(s) below"));
         line.add(new JLabel("Type Custom Composer(s) below"));
-        Button skip = new Button("Skip w/o saving");
+        JButton skip = new JButton("Skip");
         line.add(skip);
         line.add(ja);
         line.add(jc);
@@ -138,11 +146,34 @@ public class FixSameTNameAuthorDifferentArtist {
         }
 
         skip.addActionListener(e -> {
-            System.out.println("Attention: this entry won't be shown in the final .xlsx file! Skipping...");
-            synchronized (current) {
-                current.interrupt();
-            }
-            dial.dispose();
+            JDialog jd = new JDialog();
+            jd.setLayout(new GridLayout(2,1));
+            JButton wosave = new JButton("DON'T SAVE TO DB");
+            JButton wsave = new JButton("SAVE TO DB");
+            wsave.addActionListener(ex -> {
+                ret.addAll(list);
+                writeToDB(ret);
+                jd.dispose();
+                synchronized (current) {
+                    current.interrupt();
+                }
+                dial.dispose();
+            });
+
+            wosave.addActionListener(ex -> {
+                System.out.println("Attention: this entry won't be shown in the final .xlsx file! Skipping...");
+                jd.dispose();
+                synchronized (current) {
+                    current.interrupt();
+                }
+                dial.dispose();
+            });
+
+            jd.add(wsave);
+            jd.add(wosave);
+            Person.addListeners(jd);
+            jd.pack();
+            jd.setVisible(true);
         });
 
         submit.addActionListener(e -> {
@@ -180,6 +211,10 @@ public class FixSameTNameAuthorDifferentArtist {
             } catch (InterruptedException _) {
             }
         }
+    }
+
+    private static String generatePair(BelieveEntity ent) {
+        return ent.Track_composer + ":" + ent.Track_author;
     }
 
     private static String generateKey(BelieveEntity ent) {

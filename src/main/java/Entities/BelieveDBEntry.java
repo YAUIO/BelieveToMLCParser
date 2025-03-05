@@ -2,6 +2,8 @@ package Entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+
 @Entity
 public class BelieveDBEntry {
     @Id
@@ -11,18 +13,18 @@ public class BelieveDBEntry {
     @Column(nullable = false, unique = true)
     public String keys;
 
-    @Column(nullable = true)
-    public String author;
-
-    @Column(nullable = false)
-    public String composer;
+    @ElementCollection
+    @CollectionTable(joinColumns = @JoinColumn(name = "BelieveDBEntry_id"))
+    @MapKeyColumn()
+    @Column(nullable = true, unique = false)
+    public HashSet<String> composer_artist = new HashSet<>();
 
     @Override
     public String toString() {
         return "BelieveDBEntry{" +
-                "key='" + keys + '\'' +
-                ", author='" + author + '\'' +
-                ", composer='" + composer + '\'' +
+                "id=" + id +
+                ", keys='" + keys + '\'' +
+                ", fisur=" + composer_artist +
                 '}';
     }
 }
