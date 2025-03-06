@@ -140,9 +140,6 @@ public class FixSameTNameAuthorDifferentArtist {
             BelieveDBEntry entry = new BelieveDBEntry();
             entry.keys = generateKey(e);
             entry.composer_artist.add(generatePair(e));
-            System.out.println(e.Track_title);
-            System.out.println(generatePair(e) + " " + generatePair(e).length());
-            System.out.println();
             em.persist(entry);
             em.getTransaction().commit();
         } else {
@@ -160,7 +157,7 @@ public class FixSameTNameAuthorDifferentArtist {
         dial.setLayout(new BorderLayout());
         dial.setSize(new Dimension(1080, 640));
         dial.setPreferredSize(new Dimension(1080, 640));
-        JLabel jl = new JLabel("Choose which info to preserve for: " + generateKey(list.getFirst()) + " (Artist:Title:Version)");
+        JLabel jl = new JLabel("Choose which info to preserve for: " + generateKey(list.getFirst()) + " (Artist:Title:Track_Version:Version)");
         JPanel line = new JPanel(new GridLayout(2, 3));
         JTextArea ja = new JTextArea("");
         JTextArea jc = new JTextArea("");
@@ -310,14 +307,14 @@ public class FixSameTNameAuthorDifferentArtist {
     }
 
     private static String generateKey(BelieveEntity ent) {
-        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version;
+        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Version;
     }
 
     private static String generateCheckKey(BelieveEntity ent) {
         if (ent.Track_author != null) {
-            return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Track_composer.trim() + ":" + ent.Track_author.trim();
+            return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Version + ":" + ent.Track_composer.trim() + ":" + ent.Track_author.trim();
         }
-        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Track_composer.trim();
+        return ent.Track_artist_name + ":" + ent.Track_title + ":" + ent.Track_version + ":" + ent.Version + ":" + ent.Track_composer.trim();
     }
 
     private static void setVFX(ArrayList<JTable> tables, ArrayList<BelieveEntity> ents) {
